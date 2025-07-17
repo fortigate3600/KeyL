@@ -11,22 +11,21 @@ This project of a Key Logger is for **educational purposes**, it has been create
 Before starting you need to configure some stuff. Here's how:
 
 ### Go on your machine:
-1. `git clone https://github.com/fortigate3600/KeyL.git` 
+1. `git clone https://github.com/fortigate3600/KeyL.git
+   cd KeyL`
 
-   `cd KeyL`
-
-2. **Set Your Telegram Token**  
+3. **Set Your Telegram Token**  
    Open `config.py` and insert your Telegram bot token.  
    > If you’re unsure how to get one, it's easy stuff just ask ChatGPT.
 
-3. **Customize Logger Behavior (Optional)**  
+4. **Customize Logger Behavior (Optional)**  
    If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`.
 
-4. `ifconfig` to get yout ip, it is gonna be usefull later
+5. `ifconfig` to get yout ip, it is gonna be usefull later
 
-5. `pyinstaller --onefile --name mykeyl KeyL.py`
+6. `pyinstaller --onefile --name mykeyl KeyL.py`
 
-6. `python3 -m http.server 9001`
+7. `python3 -m http.server 9001`
 
 ### Now on the target machine:
 
