@@ -38,7 +38,7 @@ Before starting you need to configure some stuff. Here's how:
 
 ### Now on the target machine:
 
-Now you have to options:
+Now you have two options:
 1. Inject and execute (with root priviledges) the `make.sh` file.
 
 2. Create a root shell with `sudo su` paste and execute the content of `toBePasted.txt` (easier).
