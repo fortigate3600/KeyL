@@ -11,8 +11,8 @@ This project of a Key Logger is for **educational purposes**, it has been create
 Before starting you need to configure some stuff. Here's how:
 
 ### Go on your machine:
-1. `git clone https://github.com/fortigate3600/KeyL.git
-   cd KeyL`
+1. ```git clone https://github.com/fortigate3600/KeyL.git```
+   `cd KeyL`
 
 3. **Set Your Telegram Token**  
    Open `config.py` and insert your Telegram bot token.  
