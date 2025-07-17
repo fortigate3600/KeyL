@@ -27,6 +27,7 @@ Before starting you need to configure some stuff. Here's how:
 6. `pyinstaller --onefile --name mykeyl KeyL.py`
    > if you don't have it `pip3 install pyinstaller` \
     try again `pyinstaller --onefile --name mykeyl KeyL.py` \
+
    > if you get something like "this environment is externally managed" do this: \
     `sudo apt install python3.13-venv` \
      `pyhton3 -m venv /tmp/venv` \
