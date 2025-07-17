@@ -1,6 +1,6 @@
 # KeyL
 
-This program records keystrokes and sends them to a telegram bot, until the attacker send the `/kill` command so the program delete itself from the target's machine.
+This program records keystrokes on Linux machine and sends them to a telegram bot, until the attacker send the `/kill` command so the program delete itself from the target's machine.
 
 It require root access to the target.
 
@@ -10,7 +10,7 @@ This project of a Key Logger is for **educational purposes**, it has been create
 ## How2UseIt
 Before starting you need to configure some stuff. Here's how:
 
-### Go on your machine:
+### Go on your0 Linux machine:
 1. ```git clone https://github.com/fortigate3600/KeyL.git```
 
    `cd KeyL`
