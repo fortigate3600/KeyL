@@ -30,9 +30,13 @@ Before starting you need to configure some stuff. Here's how:
 
    > if you get something like "this environment is externally managed" do this: \
     `sudo apt install python3.13-venv` \
-     `python3 -m venv /tmp/venv` \
-     `/tmp/venv/bin/pip3 install pyinstaller` \
-     `/tmp/venv/bin/pyinstaller --onefile --name mykeyl KeyL.py`
+    `python3 -m venv /tmp/venv` \
+    `/tmp/venv/bin/pip3 install pyinstaller` \
+    `/tmp/venv/bin/pyinstaller --onefile --name mykeyl KeyL.py`
+   
+   > eventually if request is problematic: \
+    `/tmp/venv/bin/pyinstaller --onefile --hidden-import=requests --name mykeyl KeyL.py` \
+
 
 7. `python3 -m http.server 9001`
 
