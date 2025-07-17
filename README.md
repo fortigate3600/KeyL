@@ -12,6 +12,7 @@ Before starting you need to configure some stuff. Here's how:
 
 ### Go on your machine:
 1. ```git clone https://github.com/fortigate3600/KeyL.git```
+
    `cd KeyL`
 
 3. **Set Your Telegram Token**  
