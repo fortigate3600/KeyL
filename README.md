@@ -25,9 +25,8 @@ Before starting you need to configure some stuff. Here's how:
 5. `ifconfig` to get yout ip, it is gonna be usefull later
 
 6. `pyinstaller --onefile --name mykeyl KeyL.py`
-   > if you don't have it `pip3 install pyinstaller`
-
-   > try again `pyinstaller --onefile --name mykeyl KeyL.py`
+   > if you don't have it `pip3 install pyinstaller` \
+    try again `pyinstaller --onefile --name mykeyl KeyL.py`
 
    > if you get something like "this environment is externally managed" do this:
 
