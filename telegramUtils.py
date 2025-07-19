@@ -1,31 +1,17 @@
 import requests
-from config import TOKEN
 import time
+from config import TOKEN
+from config import chat_id
 
-chat_id = None
 last_update_id = 0
 
 debugging = 1
 
 def initChatID():
-    global chat_id
-    if chat_id is not None:
-        return
-    try:
-        updates = requests.get(f"https://api.telegram.org/bot{TOKEN}/getUpdates").json()
-        results = updates.get("result", [])
-        if not results:
-            raise ValueError("error getting chat_id,\n TRY SENDING A MESSAGE TO THE BOT BEFORE STARTING")
-        chat_id = results[-1]['message']['chat']['id']
-        if debugging:
-            print(f"[++]chat id: {chat_id}")
-    except Exception as e:
-        raise RuntimeError(f"error getting chat_id,: {e},\nTRY SENDING A MESSAGE TO THE BOT BEFORE STARTING")
+    return
 
 def sendFromFile(LOG_FILE):
     global chat_id
-    if chat_id is None:
-        raise RuntimeError("Chat ID not initialized")
 
     #get the text from the file...
     try:
@@ -48,11 +34,7 @@ def sendFromFile(LOG_FILE):
 def sendFromBuffer(buffer):
     text=''.join(buffer)
     print(f"got: {text}")
-    global chat_id
-    if chat_id is None:
-        raise RuntimeError("Chat ID not initialized")
-
-    #send to the bot
+    # send the text to the bot
     send_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     params = {"chat_id": chat_id, "text": text}
     response = requests.get(send_url, params=params)
@@ -75,24 +57,40 @@ def syncWithLatestUpdate():
     else:
         last_update_id = data['result'][-1]['update_id']
 
-def getLastMsg(timeout=1):
+def waitNewMsg(timeout=10, retry_delay=1):
     global last_update_id
+    end_time = time.time() + timeout
 
-    params = {
-        'timeout': timeout,
-        'offset': last_update_id + 1
-    }
-    resp = requests.get(f"https://api.telegram.org/bot{TOKEN}/getUpdates", params=params)
-    resp.raise_for_status()
-    data = resp.json()
+    while time.time() < end_time:
+        params = {
+            "offset": last_update_id + 1,
+            "timeout": timeout,
+        }
+        params = {k: v for k, v in params.items() if v is not None}
 
-    if not data['result']:
-        return None
+        try:
+            # split connect/read so we don't accidentally timeout early
+            resp = requests.get(
+                f"https://api.telegram.org/bot{TOKEN}/getUpdates",
+                params=params,
+                timeout=(3, timeout + 1)
+            )
+            resp.raise_for_status()
+        except ReadTimeout:
+            # No data from Telegram yet – just retry until end_time
+            time.sleep(retry_delay)
+            continue
 
-    updates = data['result']
-    last_update_id = updates[-1]['update_id']
-    msg = updates[-1].get('message') or updates[-1].get('edited_message')
-    if not msg:
-        return None
+        resp.raise_for_status()
+        updates = resp.json().get("result", [])
+        
+        if updates:
+            last_update_id = updates[-1]["update_id"]
+            for u in updates:
+                post = u.get("channel_post")
+                if post and post["chat"].get("username", "").lower() == chat_id.lstrip("@"):
+                    return post.get("text")
+        time.sleep(retry_delay)
 
-    return msg.get('text')
+    return None
+
