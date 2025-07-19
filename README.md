@@ -15,19 +15,20 @@ Before starting you need to configure some stuff. Here's how:
 
    `cd KeyL`
 
-3. **Set Your Telegram Token**  
+2. **Set Your Telegram Token**  
    Go on telegram, get a bot and put its token in `config.py` \
    Then create a channel called "@channelName" and put it `config.py` as well \
    after that add your mod to the channel as an admin
    > If you’re unsure how to do it, it's trivial stuff just ask ChatGPT.
 
-5. **Customize Logger Behavior (Optional)**  
+3. **Customize Logger Behavior (Optional)**  
    If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`. \
-   Be aware that I configure the software with an italian layout and every keyboard is slighly different (even with the same layout), so could be that there some typo.
+   Be aware that I configure the software with an italian layout \
+   Other than that, every keyboard is slightly different (even with the same layout), so there might be some typos.
 
-7. execute `ifconfig` to get yout ip, it is gonna be usefull later
+4. execute `ifconfig` to get yout ip, it is gonna be usefull later
 
-8. `pyinstaller --onefile --name mykeyl KeyL.py`
+5. `pyinstaller --onefile --name mykeyl KeyL.py`
    > if you don't have it `pip3 install pyinstaller` \
     try again `pyinstaller --onefile --name mykeyl KeyL.py`
 
@@ -40,8 +41,7 @@ Before starting you need to configure some stuff. Here's how:
    > eventually if request is problematic: \
     `/tmp/venv/bin/pyinstaller --onefile --hidden-import=requests --name mykeyl KeyL.py`
 
-
-9. `python3 -m http.server 9001`
+6. `python3 -m http.server 9001`
 
 ### Now on the target machine:
 
