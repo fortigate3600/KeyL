@@ -57,9 +57,8 @@ In both cases you have to modify the <IP> near the end with your IP, taken befor
 To stop the keylogger on a specific machine remotely,
 send the command `/kill <machine_id>` to the Telegram bot.
 
-
 ## How it works
-<img width="800" height="400" alt="killSwitchMechanism" src="https://github.com/user-attachments/assets/aac92346-7d68-4f4b-8460-fb7a1a382a45" />
+<img width="800" height="400" alt="465618311-aac92346-7d68-4f4b-8460-fb7a1a382a45" src="https://github.com/user-attachments/assets/05f44a28-d6b6-466f-bd12-dc148bd0bd8c" />
 
 The persistence mechanism is simple (and quite weak): when the machine is boot a serice launch it.
 I have hidden the files in the /root/ directory. I could have made it stealthier, but this project is just for academic purposes.
