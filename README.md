@@ -18,6 +18,7 @@ Before starting you need to configure some stuff. Here's how:
 3. **Set Your Telegram Token**  
    Go on telegram, get a bot and put its token in `config.py` \
    Then create a channel called "@channelName" and put it `config.py` as well \
+   after that add your mod to the channel as an admin
    > If you’re unsure how to do it, it's trivial stuff just ask ChatGPT.
 
 5. **Customize Logger Behavior (Optional)**  
