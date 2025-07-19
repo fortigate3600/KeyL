@@ -16,15 +16,17 @@ Before starting you need to configure some stuff. Here's how:
    `cd KeyL`
 
 3. **Set Your Telegram Token**  
-   Open `config.py` and insert your Telegram bot token.  
-   > If you’re unsure how to get one, it's easy stuff just ask ChatGPT.
+   Go on telegram, get a bot and put its token in `config.py` \
+   Then create a channel called "@channelName" and put it `config.py` as well \
+   > If you’re unsure how to do it, it's trivial stuff just ask ChatGPT.
 
-4. **Customize Logger Behavior (Optional)**  
-   If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`.
+5. **Customize Logger Behavior (Optional)**  
+   If you're geek enough you can configure the logger by modifying flags inside `KeyL.py`. \
+   Be aware that I configure the software with an italian layout and every keyboard is slighly different (even with the same layout), so could be that there some typo.
 
-5. `ifconfig` to get yout ip, it is gonna be usefull later
+7. execute `ifconfig` to get yout ip, it is gonna be usefull later
 
-6. `pyinstaller --onefile --name mykeyl KeyL.py`
+8. `pyinstaller --onefile --name mykeyl KeyL.py`
    > if you don't have it `pip3 install pyinstaller` \
     try again `pyinstaller --onefile --name mykeyl KeyL.py`
 
@@ -38,7 +40,7 @@ Before starting you need to configure some stuff. Here's how:
     `/tmp/venv/bin/pyinstaller --onefile --hidden-import=requests --name mykeyl KeyL.py`
 
 
-7. `python3 -m http.server 9001`
+9. `python3 -m http.server 9001`
 
 ### Now on the target machine:
 
@@ -50,8 +52,6 @@ Now you have two options:
 In both cases you have to modify the <IP> near the end with your IP, taken before with `ifconfig`
 
 ### Important:
-Before starting the program, send a dummy message to the Telegram bot.
-This is necessary for the bot to retrieve your chat_id and be able to respond to you.
 
 To stop the keylogger on a specific machine remotely,
 send the command `/kill <machine_id>` to the Telegram bot.
@@ -60,17 +60,16 @@ send the command `/kill <machine_id>` to the Telegram bot.
 ## How it works
 <img width="800" height="400" alt="killSwitchMechanism" src="https://github.com/user-attachments/assets/aac92346-7d68-4f4b-8460-fb7a1a382a45" />
 
-The persistence mechanism is simple (and quite weak): if the logger process is killed, it gets respawned automatically by a cronjob calling launc.sh.
-I have hidden the .sh files in the /tmp directory. I could have made it stealthier, but this project is just for academic purposes.
+The persistence mechanism is simple (and quite weak): when the machine is boot a serice launch it.
+I have hidden the files in the /root/ directory. I could have made it stealthier, but this project is just for academic purposes.
 
-Once the main program calls KillSwitch.sh, the latter delete every file concerning us, and cleans the crojob.
+Once the main program calls KillSwitch.sh, the latter delete every file concerning us and the service.
 
-The make.sh script (or the toBePasted.txt) creates the files shown in the image above.
 Now, let’s dive into what the code does.
 
 ## Code
 
-It monitors every keypress and stores each key in a buffer. Once the buffer reaches a certain threshold, it sends the content to a Telegram bot.
+It monitors every keypress and stores each key in a buffer. Once the buffer reaches a certain threshold, it sends the content to a chat using Telegram bot.
 
 Specifically, the monitorShift() function checks whether the Shift key is being held down and communicates this through a global flag to monitorKeys(), which logs the pressed keys. If necessary, the keys are passed through a dictionary to convert them to their uppercase equivalents.
 
